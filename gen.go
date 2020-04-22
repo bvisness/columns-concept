@@ -40,6 +40,7 @@ const funcDefTaggedNameIndex = 5
 type Package struct {
 	Name    string `json:"name"`
 	Imports string `json:"imports"`
+	Notes   string `json:"notes"`
 	Vars    []Var  `json:"vars"`
 	Types   []Type `json:"types"`
 	Funcs   []Func `json:"funcs"`
@@ -110,6 +111,16 @@ func ProcessProgram(program string) []Package {
 					}
 				}
 				p.Imports = importBuilder.String()
+			} else if strings.HasPrefix(line, "'''") {
+				notesBuilder := strings.Builder{}
+				for {
+					notesLine := nextLine()
+					if notesLine == "'''" {
+						break
+					}
+					notesBuilder.WriteString(notesLine + "\n")
+				}
+				p.Notes = notesBuilder.String()
 			} else if strings.HasPrefix(line, "var") {
 				pieces := strings.Split(line, " ")
 

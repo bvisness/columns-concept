@@ -9,14 +9,21 @@ function pushFrame(type, name, packageName = null) {
 
 	if (type === 'package') {
 		const package = packages.find(p => p.name === name);
-		const allThings = [
+		const items = [
 			...(package.vars || []),
 			...(package.types || []),
 			...(package.funcs || []),
 		];
-		allThings.sort((a, b) => a.sort - b.sort);
+		items.sort((a, b) => a.sort - b.sort);
 
-		const allText = allThings.map(t => t.text).join('\n');
+		let textChunks = [];
+
+		if (package.notes) {
+			textChunks.push(`<span class="note">${package.notes}</span>`);
+		}
+
+		textChunks = textChunks.concat(items.map(t => t.text))
+		const allText = textChunks.join('\n');
 
 		frame.title.textContent = `package ${name}`;
 		frame.contents.innerHTML = format(allText, name);

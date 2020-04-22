@@ -219,6 +219,14 @@ import (
 	[["github.com/bvisness/columns-concept/greet" / package greet]]
 )
 
+'''
+Imagine if our programming environments weren't constrained to files.
+
+In this concept, you can navigate the source code for this simple Go webserver not by browsing files, but by browsing <strong>references</strong>. When you follow a reference, the referenced item, and any relevant context, will appear on the right.
+
+You may think this is what IDEs do already. But by forgetting about files, we can stop working with the program's representation on disk, and instead work with <strong>the program itself</strong>.
+'''
+
 func main() {
 	people := [[db / package db]].[[NewFileBackedPersonDB / func db.NewFileBackedPersonDB]]("./people.json")
 

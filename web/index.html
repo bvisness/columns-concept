@@ -20,10 +20,29 @@
 			<div class="contents" data-tmpl="contents"></div>
 		</div>
 	</template>
-	<div id="frames"></div>
+	<div id="frames">
+		<div class="packages">
+			<h2>All Packages</h2>
+			<div id="package-list"></div>
+		</div>
+	</div>
 
 	<script src="script.js"></script>
 	<script>
+		const packageList = document.querySelector('#package-list');
+		const packageNames = packages.map(p => p.name);
+		packageNames.sort();
+
+		packageList.innerHTML = format(packageNames.map(
+			n => `[[${n} / package ${n}]]`
+		).join('\n'));
+		packageList.querySelectorAll('.codelink').forEach(link => {
+			link.addEventListener('click', () => {
+				document.querySelectorAll('.frame').forEach(frame => frame.remove());
+				pushFrame('package', link.textContent);
+			});
+		});
+
 		pushFrame('package', 'main');
 	</script>
 </body>

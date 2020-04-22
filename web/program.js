@@ -2,6 +2,7 @@ const packages = [
   {
     "name": "util",
     "imports": "import (\n\t\"http\"\n\t\"io\"\n)\n",
+    "notes": "",
     "vars": null,
     "types": null,
     "funcs": [
@@ -17,6 +18,7 @@ const packages = [
   {
     "name": "db",
     "imports": "import (\n\t\"encoding/json\"\n\t\"errors\"\n\t\"io/ioutil\"\n\t\"log\"\n\t\"time\"\n)\n",
+    "notes": "",
     "vars": [
       {
         "sort": 12,
@@ -112,6 +114,7 @@ const packages = [
   {
     "name": "greet",
     "imports": "import (\n\t\"fmt\"\n\t\"io/ioutil\"\n\t\"log\"\n\t\"net/http\"\n\n\t[[\"github.com/bvisness/columns-concept/db\" / package db]]\n\t[[\"github.com/bvisness/columns-concept/util\" / package util]]\n)\n",
+    "notes": "",
     "vars": null,
     "types": null,
     "funcs": [
@@ -127,6 +130,7 @@ const packages = [
   {
     "name": "birthday",
     "imports": "import (\n\t\"errors\"\n\t\"fmt\"\n\t\"io/ioutil\"\n\t\"log\"\n\t\"net/http\"\n\t\"time\"\n\n\t[[\"github.com/bvisness/columns-concept/db\" / package db]]\n\t[[\"github.com/bvisness/columns-concept/util\" / package util]]\n)\n",
+    "notes": "",
     "vars": null,
     "types": null,
     "funcs": [
@@ -142,16 +146,17 @@ const packages = [
   {
     "name": "main",
     "imports": "import (\n\t\"io\"\n\t\"log\"\n\t\"net/http\"\n\n\t[[\"github.com/bvisness/columns-concept/birthday\" / package birthday]]\n\t[[\"github.com/bvisness/columns-concept/db\" / package db]]\n\t[[\"github.com/bvisness/columns-concept/greet\" / package greet]]\n)\n",
+    "notes": "Imagine if our programming environments weren't constrained to files.\n\nIn this concept, you can navigate the source code for this simple Go webserver not by browsing files, but by browsing \u003cstrong\u003ereferences\u003c/strong\u003e. When you follow a reference, the referenced item, and any relevant context, will appear on the right.\n\nYou may think this is what IDEs do already. But by forgetting about files, we can stop working with the program's representation on disk, and instead work with \u003cstrong\u003ethe program itself\u003c/strong\u003e.\n",
     "vars": null,
     "types": null,
     "funcs": [
       {
-        "sort": 20,
+        "sort": 28,
         "name": "main",
         "receiverType": "",
         "text": "func main() {\n\tpeople := [[db / package db]].[[NewFileBackedPersonDB / func db.NewFileBackedPersonDB]](\"./people.json\")\n\n\thttp.HandleFunc(\"/greet\", [[greet / package greet]].[[GreetHandler / func greet.GreetHandler]](people))\n\thttp.HandleFunc(\"/birthday\", [[birthday / package birthday]].[[BirthdayHandler / func birthday.BirthdayHandler]](people))\n\n\tlog.Fatal(http.ListenAndServe(\":8080\", nil))\n}\n"
       }
     ],
-    "text": "package main\n\nimport (\n\t\"io\"\n\t\"log\"\n\t\"net/http\"\n\n\t[[\"github.com/bvisness/columns-concept/birthday\" / package birthday]]\n\t[[\"github.com/bvisness/columns-concept/db\" / package db]]\n\t[[\"github.com/bvisness/columns-concept/greet\" / package greet]]\n)\n\nfunc main() {\n\tpeople := [[db / package db]].[[NewFileBackedPersonDB / func db.NewFileBackedPersonDB]](\"./people.json\")\n\n\thttp.HandleFunc(\"/greet\", [[greet / package greet]].[[GreetHandler / func greet.GreetHandler]](people))\n\thttp.HandleFunc(\"/birthday\", [[birthday / package birthday]].[[BirthdayHandler / func birthday.BirthdayHandler]](people))\n\n\tlog.Fatal(http.ListenAndServe(\":8080\", nil))\n}\n"
+    "text": "package main\n\nimport (\n\t\"io\"\n\t\"log\"\n\t\"net/http\"\n\n\t[[\"github.com/bvisness/columns-concept/birthday\" / package birthday]]\n\t[[\"github.com/bvisness/columns-concept/db\" / package db]]\n\t[[\"github.com/bvisness/columns-concept/greet\" / package greet]]\n)\n\n'''\nImagine if our programming environments weren't constrained to files.\n\nIn this concept, you can navigate the source code for this simple Go webserver not by browsing files, but by browsing \u003cstrong\u003ereferences\u003c/strong\u003e. When you follow a reference, the referenced item, and any relevant context, will appear on the right.\n\nYou may think this is what IDEs do already. But by forgetting about files, we can stop working with the program's representation on disk, and instead work with \u003cstrong\u003ethe program itself\u003c/strong\u003e.\n'''\n\nfunc main() {\n\tpeople := [[db / package db]].[[NewFileBackedPersonDB / func db.NewFileBackedPersonDB]](\"./people.json\")\n\n\thttp.HandleFunc(\"/greet\", [[greet / package greet]].[[GreetHandler / func greet.GreetHandler]](people))\n\thttp.HandleFunc(\"/birthday\", [[birthday / package birthday]].[[BirthdayHandler / func birthday.BirthdayHandler]](people))\n\n\tlog.Fatal(http.ListenAndServe(\":8080\", nil))\n}\n"
   }
 ];
