@@ -31,7 +31,7 @@ function pushFrame(type, name, packageName = null) {
 		const package = packages.find(p => p.name === varPackageName);
 
 		const allText = [
-			`package ${packageName}\n`,
+			`package ${varPackageName}\n`,
 			...(package.vars || []).map(v => v.text),
 		].join('\n');
 
@@ -115,11 +115,29 @@ function pushFrame(type, name, packageName = null) {
 		}
 	}
 
+	frame.root.querySelectorAll('a.codelink').forEach(link => {
+		link.addEventListener('click', e => {
+			const link = e.target;
+			const frame = link.closest('.frame');
+			while (frame.nextElementSibling) {
+				frame.nextElementSibling.remove();
+			}
+
+			const type = link.getAttribute('data-type');
+			const name = link.getAttribute('data-name');
+			const package = link.getAttribute('data-package');
+
+			pushFrame(type, name, package);
+		});
+	});
+
 	frames.appendChild(frame.root);
+
+	window.scrollTo(window.scrollMaxX, 0)
 }
 
 function format(text, package) {
-	text = text.replace(/\[\[([a-zA-Z]+) +\/ +([a-z]+) +([a-zA-Z.:]+)\]\]/gm, `<a href="javascript:pushFrame('$2', '$3', '${package}')">$1</a>`);
+	text = text.replace(/\[\[([a-zA-Z]+) +\/ +([a-z]+) +([a-zA-Z.:]+)\]\]/gm, `<a href="javascript:void(0)" class="codelink" data-type="$2" data-name="$3" data-package="${package}">$1</a>`);
 	text = text.replace(/\n/gm, '<br>');
 	text = text.replace(/\t/gm, '<span>&nbsp;&nbsp;&nbsp;&nbsp;</span>');
 	text = text.replace(/<<[^>]+>>/gm, '');

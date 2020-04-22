@@ -138,7 +138,7 @@ func GreetHandler(people [[db / package db]].[[PersonDB / type db.PersonDB]]) ht
 			return
 		}
 
-		_, err := [[people / package people]].[[GetPerson / type db.PersonDB]](name)
+		_, err := people.[[GetPerson / type db.PersonDB]](name)
 		if err != nil {
 			if errors.Is(err, [[db / package db]].[[NotFound / var db.NotFound]]) {
 				[[util / package util]].[[WriteStringAndCode / func util.WriteStringAndCode]](w, http.StatusNotFound, "you don't exist\n")
@@ -178,7 +178,7 @@ func BirthdayHandler(people [[db / package db]].[[PersonDB / type db.PersonDB]])
 			return
 		}
 
-		person, err := [[people / package people]].[[GetPerson / type db.PersonDB]](name)
+		person, err := people.[[GetPerson / type db.PersonDB]](name)
 		if err != nil {
 			if errors.Is(err, [[db / package db]].[[NotFound / var db.NotFound]]) {
 				[[util / package util]].[[WriteStringAndCode / func util.WriteStringAndCode]](w, http.StatusNotFound, "you don't exist\n")
