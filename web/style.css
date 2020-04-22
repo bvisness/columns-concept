@@ -4,6 +4,7 @@ body {
 
 .contents {
   font-family: consolas,liberation mono,menlo,courier,monospace;
+  padding-bottom: 1rem;
 }
 
 .note {
@@ -28,7 +29,7 @@ body {
 }
 
 .frame {
-  width: 35rem;
+  width: 39rem;
   flex-shrink: 0;
   overflow-y: auto;
   padding: 1rem;

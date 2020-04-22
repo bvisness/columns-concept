@@ -140,7 +140,11 @@ function pushFrame(type, name, packageName = null) {
 
 	frames.appendChild(frame.root);
 
-	window.scrollTo(window.scrollMaxX, 0)
+	window.scrollTo({
+		left: window.scrollMaxX,
+		top: 0,
+		behavior: 'smooth',
+	});
 }
 
 function format(text, package) {
