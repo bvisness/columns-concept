@@ -1,3 +1,8 @@
 .contents {
   font-family: monospace;
 }
+
+.note {
+  font-style: italic;
+  color: #555;
+}

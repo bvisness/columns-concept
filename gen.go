@@ -55,9 +55,10 @@ type Var struct {
 }
 
 type Type struct {
-	Sort        int    `json:"sort"`
-	Name        string `json:"name"`
-	IsInterface bool   `json:"isInterface"`
+	Sort        int      `json:"sort"`
+	Name        string   `json:"name"`
+	IsInterface bool     `json:"isInterface"`
+	Implements  []string `json:"implements"`
 
 	Text string `json:"text"`
 }
@@ -147,12 +148,18 @@ func ProcessProgram(program string) []Package {
 					isInterface = true
 				}
 
-				p.Types = append(p.Types, Type{
+				t := Type{
 					Sort:        lineIndexNext,
 					Name:        pieces[1],
 					IsInterface: isInterface,
 					Text:        typeBuilder.String(),
-				})
+				}
+
+				if strings.HasPrefix(pieces[3], "<<") {
+					t.Implements = strings.Split(strings.TrimPrefix(strings.TrimSuffix(pieces[3], ">>"), "<<"), ",")
+				}
+
+				p.Types = append(p.Types, t)
 			} else if strings.HasPrefix(line, "func") {
 				pieces := funcDefRE.FindStringSubmatch(line)
 

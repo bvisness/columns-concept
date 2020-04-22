@@ -49,7 +49,7 @@ func NewFileBackedPersonDB(filepath string) [[PersonDB / type PersonDB]] {
 }
 
 func (db *[[fileDb / type fileDb]]) [[GetPerson / type PersonDB]](name string) (*[[Person / type Person]], error) {
-	people := db.[[loadFile / func fileDb.loadFile]]()
+	people := db.[[loadFile / func fileDb:loadFile]]()
 
 	if person, exists := people[name]; exists {
 		return person, nil
@@ -59,7 +59,7 @@ func (db *[[fileDb / type fileDb]]) [[GetPerson / type PersonDB]](name string) (
 }
 
 func (db *[[fileDb / type fileDb]]) [[PutPerson / type PersonDB]](person *[[Person / type Person]]) {
-	people := db.[[loadFile / func fileDb.loadFile]]()
+	people := db.[[loadFile / func fileDb:loadFile]]()
 	people[person.Name] = person
 
 	peopleJson, err := json.Marshal(people)
@@ -195,7 +195,7 @@ func BirthdayHandler(people [[db / package db]].[[PersonDB / type db.PersonDB]])
 		_, birthdayMonth, birthdayDay := person.[[Birthday / type db.Person]].Date()
 
 		if nowMonth == birthdayMonth && nowDay == birthdayDay {
-			message = fmt.Sprintf("Happy birthday, %s! Today is a special day. Congrats on turning %d, and best wishes for the coming year!\n", person.[[Name / type db.Person]], person.[[Age / func db.Person.Age]]())
+			message = fmt.Sprintf("Happy birthday, %s! Today is a special day. Congrats on turning %d, and best wishes for the coming year!\n", person.[[Name / type db.Person]], person.[[Age / func db.Person:Age]]())
 		} else {
 			daysUntilBirthday := (person.[[Birthday / type db.Person]].YearDay() - time.Now().YearDay()) % 365
 			message = fmt.Sprintf("It's not your birthday yet, but only %d days to go!\n", daysUntilBirthday)
