@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+
+	<title>Columnar Programming Concept</title>
+
+	<link rel="stylesheet" href="style.css">
+
+	<script src="program.js"></script>
+	<script src="templates.js"></script>
+</head>
+
+<body>
+	<template id="frame">
+		<div class="frame">
+			<h2 data-tmpl="title">Heyo</h2>
+			<div class="contents" data-tmpl="contents"></div>
+		</div>
+	</template>
+	<div id="frames"></div>
+	
+	<script src="script.js"></script>
+	<script>
+		pushFrame('package', 'db');
+	</script>
+</body>
+
+</html>

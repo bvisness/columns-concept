@@ -1,0 +1,229 @@
+package util
+
+import (
+	"http"
+	"io"
+)
+
+func WriteStringAndCode(w http.ResponseWriter, code int, s string) {
+	w.WriteHeader(code)
+	io.WriteString(w, s)
+}
+
+--------
+
+package db
+
+import (
+	"encoding/json"
+	"errors"
+	"io/ioutil"
+	"log"
+	"time"
+)
+
+var NotFound = errors.New("resource not found")
+
+type Person struct {
+	Name     string    `json:"name"`
+	Birthday time.Time `json:"birthday"`
+}
+
+func (p *[[Person / type Person]]) Age() int {
+	return int(time.Now().Sub(p.[[Birthday / type Person]]).Hours() / 24)
+}
+
+type PersonDB interface {
+	GetPerson(name string) (*[[Person / type Person]], error)
+	PutPerson(person *[[Person / type Person]])
+}
+
+type fileDb struct <<PersonDB>> {
+	Path string
+}
+
+func NewFileBackedPersonDB(filepath string) [[PersonDB / type PersonDB]] {
+	return [[fileDb / type fileDb]]{
+		Path: filepath
+	}
+}
+
+func (db *[[fileDb / type fileDb]]) [[GetPerson / type PersonDB]](name string) (*[[Person / type Person]], error) {
+	people := db.[[loadFile / func fileDb.loadFile]]()
+
+	if person, exists := people[name]; exists {
+		return person, nil
+	} else {
+		return nil, [[NotFound / var NotFound]]
+	}
+}
+
+func (db *[[fileDb / type fileDb]]) [[PutPerson / type PersonDB]](person *[[Person / type Person]]) {
+	people := db.[[loadFile / func fileDb.loadFile]]()
+	people[person.Name] = person
+
+	peopleJson, err := json.Marshal(people)
+	if err != nil {
+		log.Fatalf("failed to marshal people to JSON: %v", err)
+	}
+
+	err := ioutil.WriteFile(db.[[Path / type fileDb]], peopleJson, 0644)
+	if err != nil {
+		log.Fatalf("failed to save people db file: %v", err)
+	}
+}
+
+func (db *[[fileDb / type fileDb]]) loadFile() map[string]*[[Person / type Person]] {
+	fileBytes, err := ioutil.ReadAll(db.[[Path / type fileDb]])
+	if err != nil {
+		log.Fatalf("failed to read person db file: %v", err)
+	}
+
+	var people map[string]*[[Person / type Person]]
+	err := json.Unmarshal(fileBytes, &people)
+	if err != nil {
+		log.Fatalf("person db file contained invalid JSON: %v", err)
+	}
+
+	return people
+}
+
+type testDb struct <<PersonDB>> {
+	// nothing needed
+}
+
+var testPeople = map[string]*[[Person / type Person]]{
+	"Alice": &[[Person / type Person]]{
+		Name: "Alice",
+		Birthday: time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	"Bob": &[[Person / type Person]]{
+		Name: "Bob",
+		Birthday: time.Date(2000, time.April, 4, 0, 0, 0, 0, time.UTC),
+	},
+}
+
+func (db *[[testDb / type testDb]]) [[GetPerson / type PersonDB]](name string) (*[[Person / type Person]], error) {
+	if person, exists := testPeople[name]; exists {
+		return person, nil
+	} else {
+		return nil, [[NotFound / var NotFound]]
+	}
+}
+
+func (db *[[testDb / type testDb]]) [[PutPerson / type PersonDB]](person *[[Person / type Person]]) {
+	// not implemented for testing
+}
+
+-------
+
+package greet
+
+import (
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+
+	[["github.com/bvisness/columns-concept/db" / package db]]
+	[["github.com/bvisness/columns-concept/util" / package util]]
+)
+
+func GreetHandler(people [[db / package db]].[[PersonDB / type db.PersonDB]]) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+		name, err := ioutil.ReadAll(req.Body)
+		if err != nil {
+			log.Printf("error reading name: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		_, err := [[people / package people]].[[GetPerson / type db.PersonDB]](name)
+		if err != nil {
+			if errors.Is(err, [[db / package db]].[[NotFound / var db.NotFound]]) {
+				[[util / package util]].[[WriteStringAndCode / func util.WriteStringAndCode]](w, http.StatusNotFound, "you don't exist\n")
+			} else {
+				log.Printf("error getting person from database: %v", err)
+				w.WriteHeader(http.StatusInternalServerError)
+			}
+			return
+		}
+
+		[[util / package util]].[[WriteStringAndCode / func util.WriteStringAndCode]](w, http.StatusOK, fmt.Sprintf("Hello, %s!\n", string(name)))
+	}
+}
+
+----------
+
+package birthday
+
+import (
+	"errors"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"time"
+
+	[["github.com/bvisness/columns-concept/db" / package db]]
+	[["github.com/bvisness/columns-concept/util" / package util]]
+)
+
+func BirthdayHandler(people [[db / package db]].[[PersonDB / type db.PersonDB]]) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+		name, err := ioutil.ReadAll(req.Body)
+		if err != nil {
+			log.Printf("error reading name: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		person, err := [[people / package people]].[[GetPerson / type db.PersonDB]](name)
+		if err != nil {
+			if errors.Is(err, [[db / package db]].[[NotFound / var db.NotFound]]) {
+				[[util / package util]].[[WriteStringAndCode / func util.WriteStringAndCode]](w, http.StatusNotFound, "you don't exist\n")
+			} else {
+				log.Printf("error getting person from database: %v", err)
+				w.WriteHeader(http.StatusInternalServerError)
+			}
+			return
+		}
+
+		var message string
+
+		_, nowMonth, nowDay := time.Now().Date()
+		_, birthdayMonth, birthdayDay := person.[[Birthday / type db.Person]].Date()
+
+		if nowMonth == birthdayMonth && nowDay == birthdayDay {
+			message = fmt.Sprintf("Happy birthday, %s! Today is a special day. Congrats on turning %d, and best wishes for the coming year!\n", person.[[Name / type db.Person]], person.[[Age / func db.Person.Age]]())
+		} else {
+			daysUntilBirthday := (person.[[Birthday / type db.Person]].YearDay() - time.Now().YearDay()) % 365
+			message = fmt.Sprintf("It's not your birthday yet, but only %d days to go!\n", daysUntilBirthday)
+		}
+
+		[[util / package util]].[[WriteStringAndCode / func util.WriteStringAndCode]](w, http.StatusOK, message)
+	}
+}
+
+------
+
+package main
+
+import (
+	"io"
+	"log"
+	"net/http"
+
+	[["github.com/bvisness/columns-concept/birthday" / package birthday]]
+	[["github.com/bvisness/columns-concept/db" / package db]]
+	[["github.com/bvisness/columns-concept/greet" / package greet]]
+)
+
+func main() {
+	people := [[db / package db]].[[NewFileBackedPersonDB / func db.NewFileBackedPersonDB]]("./people.json")
+
+	http.HandleFunc("/greet", [[greet / package greet]].[[GreetHandler / func greet.GreetHandler]](people))
+	http.HandleFunc("/birthday", [[birthday / package birthday]].[[BirthdayHandler / func birthday.BirthdayHandler]](people))
+
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}
